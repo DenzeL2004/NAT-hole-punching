@@ -9,3 +9,5 @@ typedef struct Client_ {
 } Client;
 
 int CtorClient(Client* self, const Address const* addr);
+
+int DtorClient(Client* self);

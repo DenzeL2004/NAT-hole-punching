@@ -15,7 +15,10 @@ typedef enum Errors_ {
     INVALID_ADDR        = -2,
     INVALID_PORT        = -3,
     FAILED_BIND_SOCKET  = -4,
+    FAILED_CLOSE_SOCKET = -5,
 } Errors;
+
+#define MAX_COUNT_CLIENTS 2
 
 typedef struct Address_ {
     in_addr_t ip;
@@ -27,6 +30,22 @@ typedef struct ClientAddresses_ {
     Address local;
     Address global;
 } ClientAddresses;
+
+typedef enum PacketType_ {
+    NONE,
+    REG_CLIENT,
+    RET_ID,
+    RET_CLIENT_ADDRESS,
+    GET_CLIENT_ADDRESS
+} PacketType;
+
+typedef struct Packet_ {
+    PacketType type;
+    union {
+        ClientAddresses addresses;
+        size_t id;
+    } info;
+} Packet;
 
 Errors ParseArguments(int argc, char* argv[], Address* addr);
 

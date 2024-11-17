@@ -18,6 +18,15 @@ int CtorClient(Client* self, const Address const* addr) {
     return 0;
 }
 
+int DtorClient(Client* self) { 
+    if (close(self->sock)) {
+        fprintf(stderr, "Failed close client's socket = %d", self->sock);
+        return FAILED_CLOSE_SOCKET;
+    }    
+
+    return 0;
+}
+
 int main(int argc, char* argv[]) { 
     Address client_address = {};
     ParseArguments(2, argv + 1, &client_address);
@@ -27,7 +36,4 @@ int main(int argc, char* argv[]) {
 
     Client client = {};
     CtorClient(&client, &client_address);
-
-    
-
 }
