@@ -16,4 +16,4 @@ int DtorServer(Server* self);
 
 ClientAddresses* CurFreeSlot(Server *server);
 
-int ServerAcceptClient(Server *server);
+void ServerAcceptClient(Server *server);

@@ -9,6 +9,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <time.h>
+#include <sys/time.h>
 
 typedef enum Errors_ {
     INVALID_ARGUMENTS   = -1,
@@ -16,6 +18,7 @@ typedef enum Errors_ {
     INVALID_PORT        = -3,
     FAILED_BIND_SOCKET  = -4,
     FAILED_CLOSE_SOCKET = -5,
+    FAILED_GET_ID       = -6,
 } Errors;
 
 #define MAX_COUNT_CLIENTS 2
