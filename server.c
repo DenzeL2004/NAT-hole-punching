@@ -38,11 +38,11 @@ void ServerAcceptClient(Server *server) {
     struct sockaddr_in client_sock_addr;
     socklen_t len = sizeof(struct sockaddr_in);
 
-    Packet packet = {};
-    recvfrom(server->sock, (void*)&packet, sizeof(Packet), MSG_WAITALL,
+    Packet request = {};
+    recvfrom(server->sock, (void*)&request, sizeof(Packet), MSG_WAITALL,
             (struct sockaddr*)&client_sock_addr, &len);
 
-    *client_addr = packet.info.addresses;
+    *client_addr = request.info.addresses;
 
     client_addr->global.ip   = client_sock_addr.sin_addr.s_addr;
     client_addr->global.port = client_sock_addr.sin_port;
@@ -59,6 +59,24 @@ void ServerAcceptClient(Server *server) {
     return 0;   
 }
 
+int ServerCommunicate(Server *server) {
+    while(1) {
+        struct sockaddr_in client_sock_addr;
+        socklen_t len = sizeof(struct sockaddr_in);
+
+        Packet request = {};
+        recvfrom(server->sock, (void*)&request, sizeof(request), MSG_WAITALL,
+                        (struct sockaddr*)&client_sock_addr, &len);
+
+        size_t id = request.info.id;
+        id = (id + 1) % MAX_COUNT_CLIENTS;
+
+        Packet answer = {RET_CLIENT_ADDRESS, server->clients[id]};
+        sendto(server->sock, (void*)&answer, sizeof(Packet), 0,
+                (struct sockaddr*)&client_sock_addr, len);
+    }
+}
+
 void NATPunching(Server* server) {
     while (server->cnt_active_clt < MAX_COUNT_CLIENTS) {
         ServerAcceptClient(server);
@@ -68,5 +86,12 @@ void NATPunching(Server* server) {
 }
 
 int main(int argc, char* argv[]) {
+    Address addr;
+    ParseArguments(2, argv + 1, &addr);
+    Server server;
+    CtorServer(&server, &addr);
     
+    NATPunching(&server);
+
+    DtorServer(&server);
 }
